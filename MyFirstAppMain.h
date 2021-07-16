@@ -36,6 +36,7 @@ private:
         idTimer2,
         idSlider0,
         idTextCtrl0,
+        idTextCtrl0,
         idStaticText0,
         idStaticText1,
         idStaticText2,
@@ -62,6 +63,7 @@ private:
     wxSlider* mySlider0;
 
     wxTextCtrl* myTextCtrl0;
+    wxTextCtrl* myTextCtrl1;
 
     wxStaticText* myStaticText0;
     wxStaticText* myStaticText1;

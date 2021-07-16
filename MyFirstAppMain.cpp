@@ -22,8 +22,14 @@
 #include "include/RaspPiI2C.h"
 #include "include/RaspPiPWM.h"
 
-#define TIMER2_PERIOD   100 //ms
+#define TIMER0_PERIOD 500  // ms
+#define TIMER1_PERIOD 1000 // ms
+#define TIMER2_PERIOD 100  // ms
 #define COLOR
+
+#define MP9808_SLAVE_ADDRESS 0x1F
+#define MP9808_BYTE_LENGTH   2
+#define MP9808_REGISTER_ADDRESS
 
 // ctor
 RaspPiGPIO* myFirstGPIO = new RaspPiGPIO();
@@ -111,7 +117,7 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
     myButton0 = new wxButton(myPanel, idButton0, wxT("LED0"), wxPoint(20, 20), wxSize(80, 40));
     myButton1 = new wxButton(myPanel, idButton1, wxT("LED1"), wxPoint(20, 70), wxSize(80, 40));
 
-     //first to low level then to output -> avoid spikes
+    // first to low level then to output -> avoid spikes
     myFirstGPIO->GPIO_Clr(12);
     myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
     myFirstGPIO->GPIO_SetStdOutput(12);
@@ -143,14 +149,11 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
 
     mySlider0 = new wxSlider(myPanel, idSlider0, 127, 0, 255, wxPoint(20, 140), wxSize(200, 80), wxSL_HORIZONTAL | wxSL_VALUE_LABEL | wxSL_AUTOTICKS | wxSL_MIN_MAX_LABELS);
 
-    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 350), wxSize(250, 30));
-    myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
-    myStaticText2 = new wxStaticText(myPanel, idStaticText2, wxT(""), wxPoint(20, 450), wxSize(250, 30));
-    myStaticText3 = new wxStaticText(myPanel, idStaticText3, wxT(""), wxPoint(20, 500), wxSize(250, 30));
-    myStaticText4 = new wxStaticText(myPanel, idStaticText4, wxT(""), wxPoint(20, 550), wxSize(250, 30));
-    myStaticText5 = new wxStaticText(myPanel, idStaticText5, wxT(""), wxPoint(20, 600), wxSize(250, 30));
+    // myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 350), wxSize(250, 30));
+    // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
 
     myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
+    myTextCtrl1 = new wxTextCtrl(myPanel, idTextCtrl1, wxT(""), wxPoint(300, 40), wxSize(250, 30), wxTE_READONLY);
 
     myFirstCLK->PWMCLK_Stop();
     myFirstCLK->PWMCLK_SetDivisor(52);
@@ -164,12 +167,9 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
 
     // PWM_Start(5000, 33.3, 10, MSTRANS);
 
-    myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
-    myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
-    myStaticText2->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstPWM->pwmio + PWM_CTL)));
-    myStaticText3->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstPWM->pwmio + PWM_RNG1)));
-    myStaticText4->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstPWM->pwmio + PWM_DAT1)));
-    myStaticText5->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstGPIO->gpio + GPFSEL1)));
+    // myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
+    // myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
+
 }
 
 MyFirstAppFrame::~MyFirstAppFrame()
@@ -199,14 +199,14 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
 {
     static bool counter = 0;
 
-    if (counter%3 == 0)
+    if (counter % 3 == 0)
     {
         myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
         counter = 0;
     }
     else
     {
-        toggle++;
+        counter++;
     }
 }
 
@@ -238,11 +238,17 @@ void MyFirstAppFrame::Timer0(wxTimerEvent& event)
     toggle = !toggle;
 }
 
+/**
+ * @brief I2C Reading
+ *
+ * @param event
+ */
 void MyFirstAppFrame::Timer1(wxTimerEvent& event)
 {
     static bool toggle = 0;
 
     wxString     TmpStrg;
+    wxString     TmpStrg1;
     unsigned int Temp[2];
     unsigned int Result;
 
@@ -268,13 +274,12 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     myStaticText5->SetLabel(wxString::Format("TEST %02X %02X", Temp[0], Temp[1]));
 
     TmpStrg.Printf(wxT("%3.1f °C"), (Result / 2.0));
+    TmpStrg1.Printf(wxT("%3.1f °C"), (Result / 2.0)*9/5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
+    myTextCtrl1->SetValue(TmpStrg1);
 }
 
-void MyFirstAppFrame::Timer2(wxTimerEvent& event) {
-
-
-}
+void MyFirstAppFrame::Timer2(wxTimerEvent& event) {}
 
 void MyFirstAppFrame::Slider0(wxScrollEvent& event)
 {
@@ -357,12 +362,12 @@ void MyFirstAppFrame::PWM_Start(double frequency, double dutyCycle, unsigned int
 void MyFirstAppFrame::timer_create_start()
 {
     myTimer0 = new wxTimer(this, idTimer0);
-    myTimer0->Start(500); // ms
+    myTimer0->Start(TIMER0_PERIOD); // ms
 
     myTimer1 = new wxTimer(this, idTimer1);
-    myTimer1->Start(1000); // ms
+    myTimer1->Start(TIMER1_PERIOD); // ms
 
     myTimer2 = new wxTimer(this, idTimer2);
-    myTimer2->Start(100); // ms
+    myTimer2->Start(TIMER2_PERIOD); // ms
 }
 /* end   ************* 2021-06-15 */
