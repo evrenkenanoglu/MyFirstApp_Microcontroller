@@ -56,6 +56,11 @@ private:
 
     wxColour* ColourRGB_OFF;
 
+    wxColour* ColourLightGrey;
+    wxColour* ColourGreen;
+    wxColour* ColourRed;
+    wxColour* ColourYellow;
+
     wxButton* myButton0;
     // wxButton* myButton1;
 

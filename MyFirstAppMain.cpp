@@ -78,7 +78,7 @@ EVT_BUTTON(idButton0, MyFirstAppFrame::LED0)
 EVT_TIMER(idTimer0, MyFirstAppFrame::Timer0)
 EVT_TIMER(idTimer1, MyFirstAppFrame::Timer1)
 /* end   ************* 2021-06-15 */
-EVT_COMMAND_SCROLL_CHANGED(idSlider0, MyFirstAppFrame::Slider0)
+//EVT_COMMAND_SCROLL_CHANGED(idSlider0, MyFirstAppFrame::Slider0)
 
 END_EVENT_TABLE()
 
@@ -191,14 +191,12 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     unsigned int Temp[2];
     unsigned int Result;
 
-    if (toggle)
+    if (toggle) {}
         //  23 ..16 15..8 7..0
         //      B      G     R
         //      (B << 16) | (G << 8) | R
-
-        else
-
-            toggle = !toggle;
+    else
+        toggle = !toggle
 
     // Temp.-Sensor N75
     myFirstI2C->I2C_Write(0x4F, 0x0);
