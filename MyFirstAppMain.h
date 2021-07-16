@@ -76,8 +76,8 @@ private:
     wxTextCtrl* myTextCtrl1;
 
     wxStaticText* myStaticText0;
-    // wxStaticText* myStaticText1;
-    // wxStaticText* myStaticText2;
+    wxStaticText* myStaticText1;
+    wxStaticText* myStaticText2;
     // wxStaticText* myStaticText3;
     // wxStaticText* myStaticText4;
     // wxStaticText* myStaticText5;

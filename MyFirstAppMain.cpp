@@ -82,7 +82,7 @@ EVT_TIMER(idTimer1, MyFirstAppFrame::Timer1)
 
 END_EVENT_TABLE()
 
-MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title, wxPoint(100, 100), wxSize(600, 500))
+MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title, wxPoint(100, 100), wxSize(600, 250))
 {
 #if wxUSE_MENUS
     // create a menu bar
@@ -196,7 +196,7 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
         //      B      G     R
         //      (B << 16) | (G << 8) | R
     else
-        toggle = !toggle
+        toggle = !toggle;
 
     // Temp.-Sensor N75
     myFirstI2C->I2C_Write(0x4F, 0x0);
@@ -212,6 +212,10 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     TmpStrg1.Printf(wxT("%3.1f °F"), (Result / 2.0) * 9 / 5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
+
+    myTextCtrl1->SetLabel(wxString::Format("Previous Value-> %d", tempPacket.prev_temp);
+    myTextCtrl2->SetLabel(wxString::Format("Current  Value-> %d", tempPacket.current_temp);
+
 }
 
 void MyFirstAppFrame::Timer2(wxTimerEvent& event) {}
@@ -312,7 +316,7 @@ void MyFirstAppFrame::timer_create_start()
  *
  *
  */
-void MyFristAppFrame::init_modules()
+void MyFirstAppFrame::init_modules()
 {
     wxString TmpStrg;
 
@@ -324,7 +328,7 @@ void MyFristAppFrame::init_modules()
     ColourRed       = new wxColour(255, 0, 0);
     ColourYellow    = new wxColour(255, 255, 0);
 
-        ColourRGB_OFF = new wxColour(150 << 8);
+    ColourRGB_OFF = new wxColour(150 << 8);
 
     wxPanel* myPanel = new wxPanel(this, wxID_ANY);
 
@@ -360,7 +364,10 @@ void MyFristAppFrame::init_modules()
 
     // mySlider0 = new wxSlider(myPanel, idSlider0, 127, 0, 255, wxPoint(20, 140), wxSize(200, 80), wxSL_HORIZONTAL | wxSL_VALUE_LABEL | wxSL_AUTOTICKS | wxSL_MIN_MAX_LABELS);
 
-    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 200), wxSize(250, 30));
+    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 100), wxSize(250, 30));
+    myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(300, 100), wxSize(250, 30));
+    myStaticText2 = new wxStaticText(myPanel, idStaticText2, wxT(""), wxPoint(300, 140), wxSize(250, 30));
+
     // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
 
     myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
@@ -370,6 +377,7 @@ void MyFristAppFrame::init_modules()
 
     // myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
     // myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
+    // myStaticText2->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
 
     tempPacket.prev_temp    = 0;
     tempPacket.current_temp = 0;
