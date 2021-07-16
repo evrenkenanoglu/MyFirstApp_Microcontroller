@@ -149,7 +149,7 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
 
     mySlider0 = new wxSlider(myPanel, idSlider0, 127, 0, 255, wxPoint(20, 140), wxSize(200, 80), wxSL_HORIZONTAL | wxSL_VALUE_LABEL | wxSL_AUTOTICKS | wxSL_MIN_MAX_LABELS);
 
-    // myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 350), wxSize(250, 30));
+    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 350), wxSize(250, 30));
     // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
 
     myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
@@ -198,7 +198,7 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
 {
     static uint8_t counter = 0;
 
-    if (counter % 3 == 0)
+    if ( ((counter % 3) == 0))
     {
         myButton0->SetBackgroundColour(ColourButtonON->GetAsString());
         myFirstGPIO->GPIO_Clr(14);
@@ -210,6 +210,9 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
         myFirstGPIO->GPIO_Set(14);
         counter++;
     }
+
+    myStaticText0->SetLabel(wxString::Format("Click counter: %d", (uint) * (counter)));
+
 }
 
 void MyFirstAppFrame::LED1(wxCommandEvent& event)
