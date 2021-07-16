@@ -49,6 +49,12 @@ private:
         idStaticText5
     };
 
+    enum {
+        eModeGreater,
+        eModeEqual,
+        eModeLower,
+    }teModes;
+
     tsTemperatureData tempPacket;
 
     wxColour* ColourButtonOFF;

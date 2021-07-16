@@ -78,7 +78,7 @@ EVT_BUTTON(idButton0, MyFirstAppFrame::LED0)
 EVT_TIMER(idTimer0, MyFirstAppFrame::Timer0)
 EVT_TIMER(idTimer1, MyFirstAppFrame::Timer1)
 /* end   ************* 2021-06-15 */
-//EVT_COMMAND_SCROLL_CHANGED(idSlider0, MyFirstAppFrame::Slider0)
+// EVT_COMMAND_SCROLL_CHANGED(idSlider0, MyFirstAppFrame::Slider0)
 
 END_EVENT_TABLE()
 
@@ -133,33 +133,52 @@ void MyFirstAppFrame::OnAbout(wxCommandEvent& event)
 
 void MyFirstAppFrame::LED0(wxCommandEvent& event)
 {
-    static uint8_t counter = 0;
+    static uint8_t counter             = 0;
+    static bool    statusPrev          = false;
+    static bool    status              = false;
+    static uint8_t statusChangeCounter = 0;
     counter++;
     if ((counter % 3) == 0)
     {
-        myButton0->SetBackgroundColour(ColourButtonON->GetAsString());
         myFirstGPIO->GPIO_Set(14);
         counter = 0;
+        status  = true;
     }
     else
     {
-        myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
         myFirstGPIO->GPIO_Clr(14);
+        status = false;
     }
+
+    if (status != statusPrev)
+        statusChangeCounter++;
+
+    switch (statusChangeCounter)
+    {
+        case 0:
+            myButton0->SetBackgroundColour(ColourLightGrey->GetAsString());
+
+            break;
+        case 1:
+            myButton0->SetBackgroundColour(ColourGreen->GetAsString());
+
+            break;
+        case 2:
+            myButton0->SetBackgroundColour(ColourYellow->GetAsString());
+
+            break;
+        case 3:
+            myButton0->SetBackgroundColour(ColourLightGrey->GetAsString());
+            statusChangeCounter = 0;
+        default:
+            break;
+    }
+
     myStaticText0->SetLabel(wxString::Format("Click counter: %d", (counter)));
+    status =
 }
 
-void MyFirstAppFrame::Timer0(wxTimerEvent& event)
-{
-    static bool toggle = 0;
-
-    if (toggle)
-        myPanel0->SetBackgroundColour(ColourButtonOFF->GetAsString());
-    else
-        myPanel0->SetBackgroundColour(ColourButtonON->GetAsString());
-
-    toggle = !toggle;
-}
+void MyFirstAppFrame::Timer0(wxTimerEvent& event) {}
 
 /**
  * @brief Periodic I2C Reading and GUI Modification
@@ -175,10 +194,12 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     unsigned int Temp[2];
     unsigned int Result;
 
-    if (toggle) {}
-        //  23 ..16 15..8 7..0
-        //      B      G     R
-        //      (B << 16) | (G << 8) | R
+    if (toggle)
+    {
+    }
+    //  23 ..16 15..8 7..0
+    //      B      G     R
+    //      (B << 16) | (G << 8) | R
     else
         toggle = !toggle;
 
@@ -200,6 +221,36 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     myStaticText1->SetLabel(wxString::Format("Previous Value-> %d", tempPacket.prev_temp));
     myStaticText2->SetLabel(wxString::Format("Current  Value-> %d", tempPacket.current_temp));
 
+    uint8_t mode;
+
+    if (tempPacket.current_temp > tempPacket.prev_temp)
+        mode = eModeGreater;
+    else if (tempPacket.current_temp == tempPacket.prev_temp)
+        mode = eModeEqual;
+    else
+        mode = eModeLower;
+
+    switch (mode)
+    {
+        case eModeGreater:
+            myPanel0->SetBackgroundColour(ColourGreen->GetAsString());
+
+            break;
+        case eModeEqual:
+            myPanel0->SetBackgroundColour(ColourRed->GetAsString());
+
+            break;
+
+        case eModeLower:
+            myPanel0->SetBackgroundColour(ColourYellow->GetAsString());
+
+            break;
+
+        default:
+            break;
+    }
+
+    tempPacket.prev_temp = tempPacket.current_temp;
 }
 
 void MyFirstAppFrame::Timer2(wxTimerEvent& event) {}
