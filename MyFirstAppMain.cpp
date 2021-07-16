@@ -82,7 +82,7 @@ EVT_COMMAND_SCROLL_CHANGED(idSlider0, MyFirstAppFrame::Slider0)
 
 END_EVENT_TABLE()
 
-MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title, wxPoint(100, 100), wxSize(600, 800))
+MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title, wxPoint(100, 100), wxSize(600, 500))
 {
 #if wxUSE_MENUS
     // create a menu bar
@@ -196,9 +196,8 @@ void MyFirstAppFrame::OnAbout(wxCommandEvent& event)
 
 void MyFirstAppFrame::LED0(wxCommandEvent& event)
 {
-    static uint8_t counter = 0;
-
-    if ( ((counter % 3) == 0))
+    static uint8_t counter = 1;
+    if ((counter % 3) == 0)
     {
         myButton0->SetBackgroundColour(ColourButtonON->GetAsString());
         myFirstGPIO->GPIO_Clr(14);
@@ -208,11 +207,9 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
     {
         myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
         myFirstGPIO->GPIO_Set(14);
-        counter++;
     }
-
-    myStaticText0->SetLabel(wxString::Format("Click counter: %d", (uint) * (counter)));
-
+    counter++;
+    myStaticText0->SetLabel(wxString::Format("Click counter: %d", (counter)));
 }
 
 void MyFirstAppFrame::LED1(wxCommandEvent& event)
@@ -279,7 +276,7 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     // myStaticText5->SetLabel(wxString::Format("TEST %02X %02X", Temp[0], Temp[1]));
 
     TmpStrg.Printf(wxT("%3.1f °C"), (Result / 2.0));
-    TmpStrg1.Printf(wxT("%3.1f °C"), (Result / 2.0) * 9 / 5 + 32);
+    TmpStrg1.Printf(wxT("%3.1f °F"), (Result / 2.0) * 9 / 5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
 }
