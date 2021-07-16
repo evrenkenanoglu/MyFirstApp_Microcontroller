@@ -175,7 +175,7 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
     }
 
     myStaticText0->SetLabel(wxString::Format("Click counter: %d", (counter)));
-    stattusPrev = status;
+    statusPrev = status;
 }
 
 void MyFirstAppFrame::Timer0(wxTimerEvent& event) {}
@@ -235,7 +235,7 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
 
-    tempPacket.current = Res;
+    tempPacket.current_temp = Res;
     myStaticText1->SetLabel(wxString::Format("Previous Value-> %f", tempPacket.prev_temp));
     myStaticText2->SetLabel(wxString::Format("Current  Value-> %f", tempPacket.current_temp));
 
