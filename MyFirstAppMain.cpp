@@ -29,7 +29,7 @@
 
 #define MP9808_SLAVE_ADDRESS 0x1F
 #define MP9808_BYTE_LENGTH   2
-#define MP9808_REGISTER_ADDRESS
+#define MP9808_REGISTER_ADDRESS 0x05
 
 // ctor
 RaspPiGPIO* myFirstGPIO = new RaspPiGPIO();
@@ -193,6 +193,8 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     wxString     TmpStrg1;
     unsigned int Temp[2];
     unsigned int Result;
+    uint8_t      firstByte  = 0;
+    uint8_t      secondByte = 0;
 
     if (toggle)
     {
@@ -204,17 +206,44 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
         toggle = !toggle;
 
     // Temp.-Sensor N75
-    myFirstI2C->I2C_Write(0x4F, 0x0);
-    myFirstI2C->I2C_Read(2);
 
-    // myFirstI2C->I2C_Read_Only(0x4F, 2);
+    myFirstI2C->I2C_Write(MP9808_SLAVE_ADDRESS, MP9808_REGISTER_ADDRESS); // Access register with ambient temperature
+    myFirstI2C->I2C_Read(MP9808_BYTE_LENGTH);           
+
     myFirstI2C->I2C_FIFO_to_Array(Temp, 2);
-    Result = (Temp[1] >> 7) | (Temp[0] << 1);
+    Sign       = Temp[0] & 0x10;                           // Mask so only 5th bit (sign bit) is available
+    firstByte  = (Temp[0] & 0x0F) << 4;                    // First 4 bits masked out and rest shifted left
+    secondByte = Temp[1] >> 4;                             // shifted right
+    Result     = ((Temp[0] & 0x0F) << 4) + (Temp[1] >> 4); 
 
-    // myStaticText5->SetLabel(wxString::Format("TEST %02X %02X", Temp[0], Temp[1]));
+    if (Sign == 0)
+        Result = Result;
+    else
+        Result = -Result;
 
-    TmpStrg.Printf(wxT("%3.1f °C"), (Result / 2.0));
-    TmpStrg1.Printf(wxT("%3.1f °F"), (Result / 2.0) * 9 / 5 + 32);
+    float deci =0;
+    if ((Temp[1]&0x08)==0x08)
+        deci = deci+0.5;
+    else
+        ;
+    if ((Temp[1]&0x04)==0x04)
+        deci = deci+0.25;
+    else
+        ;
+    if ((Temp[1]&0x02)==0x02)
+        deci = deci+0.125;
+    else
+        ;
+    if ((Temp[1]&0x01)==0x01)
+        deci = deci+0.0625;
+    else
+        ;
+
+    float Res = Result;
+    Res = Res +deci;
+
+    TmpStrg.Printf(wxT("%3.1f °C"), (Res / 2.0));
+    TmpStrg1.Printf(wxT("%3.1f °F"), (Res / 2.0) * 9 / 5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
 
