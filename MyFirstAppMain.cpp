@@ -175,7 +175,7 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
     }
 
     myStaticText0->SetLabel(wxString::Format("Click counter: %d", (counter)));
-    status =
+    stattusPrev = status;
 }
 
 void MyFirstAppFrame::Timer0(wxTimerEvent& event) {}
@@ -230,13 +230,14 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     float Res = Result;
     Res       = Res + deci;
 
-    TmpStrg.Printf(wxT("%3.1f °C"), (Res / 2.0));
-    TmpStrg1.Printf(wxT("%3.1f °F"), (Res / 2.0) * 9 / 5 + 32);
+    TmpStrg.Printf(wxT("%3.1f °C"), (Res));
+    TmpStrg1.Printf(wxT("%3.1f °F"), (Res) * 9 / 5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
 
-    myStaticText1->SetLabel(wxString::Format("Previous Value-> %d", tempPacket.prev_temp));
-    myStaticText2->SetLabel(wxString::Format("Current  Value-> %d", tempPacket.current_temp));
+    tempPacket.current = Res;
+    myStaticText1->SetLabel(wxString::Format("Previous Value-> %f", tempPacket.prev_temp));
+    myStaticText2->SetLabel(wxString::Format("Current  Value-> %f", tempPacket.current_temp));
 
     uint8_t mode;
 

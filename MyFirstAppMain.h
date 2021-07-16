@@ -18,8 +18,8 @@
 
 typedef struct
 {
-    uint8_t prev_temp;
-    uint8_t current_temp;
+    float prev_temp;
+    float current_temp;
 } tsTemperatureData;
 
 class MyFirstAppFrame : public wxFrame
