@@ -153,7 +153,7 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
     // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
 
     myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
-    myTextCtrl1 = new wxTextCtrl(myPanel, idTextCtrl1, wxT(""), wxPoint(300, 40), wxSize(250, 30), wxTE_READONLY);
+    myTextCtrl1 = new wxTextCtrl(myPanel, idTextCtrl1, wxT(""), wxPoint(300, 60), wxSize(250, 30), wxTE_READONLY);
 
     myFirstCLK->PWMCLK_Stop();
     myFirstCLK->PWMCLK_SetDivisor(52);
@@ -197,7 +197,7 @@ void MyFirstAppFrame::OnAbout(wxCommandEvent& event)
 
 void MyFirstAppFrame::LED0(wxCommandEvent& event)
 {
-    static bool counter = 0;
+    static uint8_t counter = 0;
 
     if (counter % 3 == 0)
     {

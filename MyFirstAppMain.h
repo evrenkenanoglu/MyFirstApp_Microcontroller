@@ -65,12 +65,12 @@ private:
     wxTextCtrl* myTextCtrl0;
     wxTextCtrl* myTextCtrl1;
 
-    wxStaticText* myStaticText0;
-    wxStaticText* myStaticText1;
-    wxStaticText* myStaticText2;
-    wxStaticText* myStaticText3;
-    wxStaticText* myStaticText4;
-    wxStaticText* myStaticText5;
+    // wxStaticText* myStaticText0;
+    // wxStaticText* myStaticText1;
+    // wxStaticText* myStaticText2;
+    // wxStaticText* myStaticText3;
+    // wxStaticText* myStaticText4;
+    // wxStaticText* myStaticText5;
 
     void OnClose(wxCloseEvent& event);
     void OnQuit(wxCommandEvent& event);
