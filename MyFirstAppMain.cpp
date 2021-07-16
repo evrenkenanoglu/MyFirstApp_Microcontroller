@@ -73,7 +73,7 @@ EVT_CLOSE(MyFirstAppFrame::OnClose)
 EVT_MENU(idMenuQuit, MyFirstAppFrame::OnQuit)
 EVT_MENU(idMenuAbout, MyFirstAppFrame::OnAbout)
 EVT_BUTTON(idButton0, MyFirstAppFrame::LED0)
-EVT_BUTTON(idButton1, MyFirstAppFrame::LED1)
+// EVT_BUTTON(idButton1, MyFirstAppFrame::LED1)
 /* begin ************* 2021-06-15 */
 EVT_TIMER(idTimer0, MyFirstAppFrame::Timer0)
 EVT_TIMER(idTimer1, MyFirstAppFrame::Timer1)
@@ -105,70 +105,7 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
     SetStatusText(wxbuildinfo(short_f), 1);
 #endif // wxUSE_STATUSBAR
 
-    wxString TmpStrg;
-
-    ColourButtonOFF  = new wxColour(0, 255, 0);
-    ColourButtonON = new wxColour(204, 255, 204);
-
-    ColourRGB_OFF = new wxColour(150 << 8);
-
-    wxPanel* myPanel = new wxPanel(this, wxID_ANY);
-
-    myButton0 = new wxButton(myPanel, idButton0, wxT("LED0"), wxPoint(20, 20), wxSize(80, 40));
-    myButton1 = new wxButton(myPanel, idButton1, wxT("LED1"), wxPoint(20, 70), wxSize(80, 40));
-
-    // first to low level then to output -> avoid spikes
-    myFirstGPIO->GPIO_Clr(12);
-    myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
-    myFirstGPIO->GPIO_SetStdOutput(12);
-
-    myFirstGPIO->GPIO_Clr(14);
-    myButton1->SetBackgroundColour(ColourButtonOFF->GetAsString());
-    myFirstGPIO->GPIO_SetStdOutput(14);
-
-    // PWM0_0
-    myFirstGPIO->GPIO_Clr(18);
-    myFirstGPIO->GPIO_SetAltOutput(18, 5);
-
-    // I2C
-    myFirstGPIO->GPIO_SetAltOutput(0, 0);
-    myFirstGPIO->GPIO_SetResistor(0, NORESISTOR);
-
-    myFirstGPIO->GPIO_SetAltOutput(1, 0);
-    myFirstGPIO->GPIO_SetResistor(1, NORESISTOR);
-
-    myFirstI2C->I2C_Enable();
-
-    myPanel0 = new wxPanel(myPanel, idPanel0, wxPoint(120, 20), wxSize(80, 40));
-    myPanel0->SetBackgroundColour(ColourButtonOFF->GetAsString());
-
-    myPanel1 = new wxPanel(myPanel, idPanel1, wxPoint(120, 70), wxSize(80, 40));
-    myPanel1->SetBackgroundColour(ColourButtonOFF->GetAsString());
-
-    timer_create_start();
-
-    mySlider0 = new wxSlider(myPanel, idSlider0, 127, 0, 255, wxPoint(20, 140), wxSize(200, 80), wxSL_HORIZONTAL | wxSL_VALUE_LABEL | wxSL_AUTOTICKS | wxSL_MIN_MAX_LABELS);
-
-    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 350), wxSize(250, 30));
-    // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
-
-    myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
-    myTextCtrl1 = new wxTextCtrl(myPanel, idTextCtrl1, wxT(""), wxPoint(300, 60), wxSize(250, 30), wxTE_READONLY);
-
-    myFirstCLK->PWMCLK_Stop();
-    myFirstCLK->PWMCLK_SetDivisor(52);
-
-    myFirstPWM->PWM_SetMode(0, PWMMODE, MSTRANS);
-    myFirstPWM->PWM_SetRng(0, 1024);
-    myFirstPWM->PWM_SetData(0, 512);
-    myFirstPWM->PWM_Enable_Channel(0);
-
-    myFirstCLK->PWMCLK_Start();
-
-    // PWM_Start(5000, 33.3, 10, MSTRANS);
-
-    // myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
-    // myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
+    init_modules();
 }
 
 MyFirstAppFrame::~MyFirstAppFrame()
@@ -212,21 +149,21 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
     myStaticText0->SetLabel(wxString::Format("Click counter: %d", (counter)));
 }
 
-void MyFirstAppFrame::LED1(wxCommandEvent& event)
-{
-    static bool toggle = 0;
-
-    if (toggle)
-    {
-        // myFirstGPIO->GPIO_Clr(14);
-        toggle = 0;
-    }
-    else
-    {
-        // myFirstGPIO->GPIO_Set(14);
-        toggle = 1;
-    }
-}
+// void MyFirstAppFrame::LED1(wxCommandEvent& event)
+// {
+//     static bool toggle = 0;
+//
+//     if (toggle)
+//     {
+//         // myFirstGPIO->GPIO_Clr(14);
+//         toggle = 0;
+//     }
+//     else
+//     {
+//         // myFirstGPIO->GPIO_Set(14);
+//         toggle = 1;
+//     }
+// }
 
 void MyFirstAppFrame::Timer0(wxTimerEvent& event)
 {
@@ -259,11 +196,9 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
         //      B      G     R
         //      (B << 16) | (G << 8) | R
 
-        myPanel1->SetBackgroundColour(wxColour(150 << 8));
-    else
-        myPanel1->SetBackgroundColour(wxColour(255));
+        else
 
-    toggle = !toggle;
+            toggle = !toggle;
 
     // Temp.-Sensor N75
     myFirstI2C->I2C_Write(0x4F, 0x0);
@@ -283,13 +218,13 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
 
 void MyFirstAppFrame::Timer2(wxTimerEvent& event) {}
 
-void MyFirstAppFrame::Slider0(wxScrollEvent& event)
-{
-    int myColor;
+// void MyFirstAppFrame::Slider0(wxScrollEvent& event)
+// {
+//     int myColor;
 
-    myColor = mySlider0->GetValue();
-    myButton1->SetBackgroundColour(wxColour(myColor));
-}
+//     myColor = mySlider0->GetValue();
+//     // myButton1->SetBackgroundColour(wxColour(myColor));
+// }
 
 void MyFirstAppFrame::PWM_Start(double frequency, double dutyCycle, unsigned int counts, unsigned int mode)
 {
@@ -373,3 +308,71 @@ void MyFirstAppFrame::timer_create_start()
     myTimer2->Start(TIMER2_PERIOD); // ms
 }
 /* end   ************* 2021-06-15 */
+
+/**
+ * @brief Initilizes i2c, gpio, pwm modules and GUI
+ *
+ *
+ */
+void MyFristAppFrame::init_modules()
+{
+    wxString TmpStrg;
+
+    ColourButtonOFF = new wxColour(0, 255, 0);
+    ColourButtonON  = new wxColour(204, 255, 204);
+
+    ColourLightGrey = new wxColour(192, 192, 192);
+    ColourGreen     = new wxColour(0, 255, 0);
+    ColourRed       = new wxColour(255, 0, 0);
+    ColourYellow    = new wxColour(255, 255, 0);
+
+        ColourRGB_OFF = new wxColour(150 << 8);
+
+    wxPanel* myPanel = new wxPanel(this, wxID_ANY);
+
+    myButton0 = new wxButton(myPanel, idButton0, wxT("LED0"), wxPoint(20, 20), wxSize(80, 40));
+    // myButton1 = new wxButton(myPanel, idButton1, wxT("LED1"), wxPoint(20, 70), wxSize(80, 40));
+
+    // first to low level then to output -> avoid spikes
+    myFirstGPIO->GPIO_Clr(12);
+    myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
+    myFirstGPIO->GPIO_SetStdOutput(12);
+
+    myFirstGPIO->GPIO_Clr(14);
+    // myButton1->SetBackgroundColour(ColourButtonOFF->GetAsString());
+    myFirstGPIO->GPIO_SetStdOutput(14);
+
+    // PWM0_0
+    myFirstGPIO->GPIO_Clr(18);
+    myFirstGPIO->GPIO_SetAltOutput(18, 5);
+
+    // I2C
+    myFirstGPIO->GPIO_SetAltOutput(0, 0);
+    myFirstGPIO->GPIO_SetResistor(0, NORESISTOR);
+
+    myFirstGPIO->GPIO_SetAltOutput(1, 0);
+    myFirstGPIO->GPIO_SetResistor(1, NORESISTOR);
+
+    myFirstI2C->I2C_Enable();
+
+    myPanel0 = new wxPanel(myPanel, idPanel0, wxPoint(120, 20), wxSize(80, 40));
+    myPanel0->SetBackgroundColour(ColourButtonOFF->GetAsString());
+
+    timer_create_start();
+
+    // mySlider0 = new wxSlider(myPanel, idSlider0, 127, 0, 255, wxPoint(20, 140), wxSize(200, 80), wxSL_HORIZONTAL | wxSL_VALUE_LABEL | wxSL_AUTOTICKS | wxSL_MIN_MAX_LABELS);
+
+    myStaticText0 = new wxStaticText(myPanel, idStaticText0, wxT(""), wxPoint(20, 200), wxSize(250, 30));
+    // myStaticText1 = new wxStaticText(myPanel, idStaticText1, wxT(""), wxPoint(20, 400), wxSize(250, 30));
+
+    myTextCtrl0 = new wxTextCtrl(myPanel, idTextCtrl0, wxT(""), wxPoint(300, 20), wxSize(250, 30), wxTE_READONLY);
+    myTextCtrl1 = new wxTextCtrl(myPanel, idTextCtrl1, wxT(""), wxPoint(300, 60), wxSize(250, 30), wxTE_READONLY);
+
+    // PWM_Start(5000, 33.3, 10, MSTRANS);
+
+    // myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
+    // myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
+
+    tempPacket.prev_temp    = 0;
+    tempPacket.current_temp = 0;
+}

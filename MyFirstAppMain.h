@@ -16,6 +16,12 @@
 
 #include "MyFirstAppApp.h"
 
+typedef struct
+{
+    uint8_t prev_temp;
+    uint8_t current_temp;
+} tsTemperatureData;
+
 class MyFirstAppFrame : public wxFrame
 {
 public:
@@ -30,11 +36,9 @@ private:
         idButton0,
         idButton1,
         idPanel0,
-        idPanel1,
         idTimer0,
         idTimer1,
         idTimer2,
-        idSlider0,
         idTextCtrl0,
         idTextCtrl0,
         idStaticText0,
@@ -45,22 +49,23 @@ private:
         idStaticText5
     };
 
+    tsTemperatureData tempPacket;
+
     wxColour* ColourButtonOFF;
     wxColour* ColourButtonON;
 
     wxColour* ColourRGB_OFF;
 
     wxButton* myButton0;
-    wxButton* myButton1;
+    // wxButton* myButton1;
 
     wxPanel* myPanel0;
-    wxPanel* myPanel1;
 
     wxTimer* myTimer0;
     wxTimer* myTimer1;
     wxTimer* myTimer2;
 
-    wxSlider* mySlider0;
+    // wxSlider* mySlider0;
 
     wxTextCtrl* myTextCtrl0;
     wxTextCtrl* myTextCtrl1;
@@ -76,6 +81,8 @@ private:
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 
+    void init_modules(void);
+
     void LED0(wxCommandEvent& event);
     void LED1(wxCommandEvent& event);
 
@@ -88,7 +95,6 @@ private:
 
     void PWM_Start(double frequency, double dutyCycle, unsigned int counts, unsigned int mode);
     // void PWM_Change_Freq(double frequency, double dutyCycle, unsigned int counts, unsigned int mode);
-
 
     DECLARE_EVENT_TABLE()
 };
