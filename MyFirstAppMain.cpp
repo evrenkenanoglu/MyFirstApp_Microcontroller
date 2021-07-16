@@ -107,8 +107,8 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
 
     wxString TmpStrg;
 
-    ColourButtonOFF = new wxColour(0, 150, 0);
-    ColourButtonON  = new wxColour(255, 0, 0);
+    ColourButtonOFF = new wxColour(204, 255, 204);
+    ColourButtonON  = new wxColour(0, 255, 0);
 
     ColourRGB_OFF = new wxColour(150 << 8);
 
@@ -169,7 +169,6 @@ MyFirstAppFrame::MyFirstAppFrame(wxFrame* frame, const wxString& title) : wxFram
 
     // myStaticText0->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_CNTL)));
     // myStaticText1->SetLabel(wxString::Format("TEST %08X", (uint) * (myFirstCLK->clkio + PWMCLK_DIV)));
-
 }
 
 MyFirstAppFrame::~MyFirstAppFrame()
@@ -201,11 +200,14 @@ void MyFirstAppFrame::LED0(wxCommandEvent& event)
 
     if (counter % 3 == 0)
     {
-        myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
+        myButton0->SetBackgroundColour(ColourButtonON->GetAsString());
+        myFirstGPIO->GPIO_Clr(14);
         counter = 0;
     }
     else
     {
+        myButton0->SetBackgroundColour(ColourButtonOFF->GetAsString());
+        myFirstGPIO->GPIO_Set(14);
         counter++;
     }
 }
@@ -216,12 +218,12 @@ void MyFirstAppFrame::LED1(wxCommandEvent& event)
 
     if (toggle)
     {
-        myFirstGPIO->GPIO_Clr(14);
+        //myFirstGPIO->GPIO_Clr(14);
         toggle = 0;
     }
     else
     {
-        myFirstGPIO->GPIO_Set(14);
+        //myFirstGPIO->GPIO_Set(14);
         toggle = 1;
     }
 }
@@ -271,10 +273,10 @@ void MyFirstAppFrame::Timer1(wxTimerEvent& event)
     myFirstI2C->I2C_FIFO_to_Array(Temp, 2);
     Result = (Temp[1] >> 7) | (Temp[0] << 1);
 
-    myStaticText5->SetLabel(wxString::Format("TEST %02X %02X", Temp[0], Temp[1]));
+    // myStaticText5->SetLabel(wxString::Format("TEST %02X %02X", Temp[0], Temp[1]));
 
     TmpStrg.Printf(wxT("%3.1f °C"), (Result / 2.0));
-    TmpStrg1.Printf(wxT("%3.1f °C"), (Result / 2.0)*9/5 + 32);
+    TmpStrg1.Printf(wxT("%3.1f °C"), (Result / 2.0) * 9 / 5 + 32);
     myTextCtrl0->SetValue(TmpStrg);
     myTextCtrl1->SetValue(TmpStrg1);
 }
